@@ -2,14 +2,15 @@ package info.lalomartins.games.interactionBuilder.contexts
 
 import info.lalomartins.games.interactionBuilder.NodeBase
 
-abstract class BuilderContext : NodeBase() {
-    override val builderContext: BuilderContext
+abstract class BuilderContext<RuntimeContext> : NodeBase<RuntimeContext>() {
+    override val builderContext: BuilderContext<RuntimeContext>
         get() = this
     var name = ""
     var introduction = ""
     var playerActor = "player"
     var npcActor = "npc"
     var narratorActor = "narrator"
+    var setup: (RuntimeContext.() -> Unit)? = null
 
     fun introduction(text: String) {
         if (introduction.isNotEmpty()) {
@@ -18,17 +19,21 @@ abstract class BuilderContext : NodeBase() {
         introduction += text
     }
 
-    abstract fun registerNode(node: Node)
+    fun setup(block: RuntimeContext.() -> Unit) {
+        setup = block
+    }
 
-    abstract fun lastNode(): Node?
+    abstract fun registerNode(node: Node<RuntimeContext>)
 
-    abstract fun lastSibling(of: Node): Node?
+    abstract fun lastNode(): Node<RuntimeContext>?
 
-    open class Simple : BuilderContext() {
-        val nodes = mutableListOf<Node>()
-        val nodeIndex = mutableMapOf<String, Node>()
+    abstract fun lastSibling(of: Node<RuntimeContext>): Node<RuntimeContext>?
 
-        override fun registerNode(node: Node) {
+    open class Simple<R> : BuilderContext<R>() {
+        val nodes = mutableListOf<Node<R>>()
+        val nodeIndex = mutableMapOf<String, Node<R>>()
+
+        override fun registerNode(node: Node<R>) {
             lastSibling(node)?.let { other ->
                 if (other.chain == null && other.chainTo == null) {
                     other.chain = node
@@ -40,7 +45,7 @@ abstract class BuilderContext : NodeBase() {
 
         override fun lastNode() = nodes.lastOrNull()
 
-        override fun lastSibling(of: Node): Node? {
+        override fun lastSibling(of: Node<R>): Node<R>? {
             for (node in nodes.asReversed()) {
                 if (node.parent == of.parent) {
                     return node
@@ -48,11 +53,5 @@ abstract class BuilderContext : NodeBase() {
             }
             return null
         }
-    }
-
-    open class Default : Simple() {
-        val strings = mutableMapOf<String, String>()
-        val vals = mutableMapOf<String, Float>()
-        val flags = mutableMapOf<String, Boolean>()
     }
 }

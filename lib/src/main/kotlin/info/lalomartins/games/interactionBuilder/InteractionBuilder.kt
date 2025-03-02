@@ -1,18 +1,18 @@
 package info.lalomartins.games.interactionBuilder
 
 import info.lalomartins.games.interactionBuilder.contexts.BuilderContext
+import info.lalomartins.games.interactionBuilder.contexts.SimpleRuntimeContext
 
 class InteractionBuilder<
-    ContextType : BuilderContext,
+    ContextType,
     // CategoryEnum, ActionBuilder
 >(
-    context: ContextType,
-    script: ContextType.() -> Unit,
+    rootContext: BuilderContext<ContextType> = BuilderContext.Simple(),
+    script: BuilderContext<ContextType>.() -> Unit,
 ) {
     init {
-        with(context) { script() }
+        with(rootContext) { script() }
     }
 }
 
-fun interactionBuilder(script: BuilderContext.Default.() -> Unit): InteractionBuilder<BuilderContext.Default> =
-    InteractionBuilder(BuilderContext.Default(), script)
+fun interactionBuilder(script: BuilderContext<SimpleRuntimeContext>.() -> Unit) = InteractionBuilder(script = script)

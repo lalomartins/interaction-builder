@@ -1,9 +1,9 @@
 package info.lalomartins.games.interactionBuilder.demo
 
-import info.lalomartins.games.interactionBuilder.contexts.BuilderContext
+import info.lalomartins.games.interactionBuilder.contexts.SimpleRuntimeContext
 import info.lalomartins.games.interactionBuilder.interactionBuilder
 
-fun BuilderContext.Default.fadeUp(duration: Float) {
+fun SimpleRuntimeContext.fadeUp(duration: Float) {
     println("fadeUp($duration)")
 }
 

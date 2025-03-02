@@ -3,19 +3,19 @@ package info.lalomartins.games.interactionBuilder
 import info.lalomartins.games.interactionBuilder.contexts.BuilderContext
 import info.lalomartins.games.interactionBuilder.contexts.Node
 
-abstract class NodeBase {
-    abstract val builderContext: BuilderContext
+abstract class NodeBase<RuntimeContext> {
+    abstract val builderContext: BuilderContext<RuntimeContext>
 
-    fun node(block: Node.() -> Unit) =
-        Node(builderContext, this).also {
+    fun node(block: Node<RuntimeContext>.() -> Unit) =
+        Node<RuntimeContext>(builderContext, this).also {
             block(it)
             builderContext.registerNode(it)
         }
 
     fun choice(
         text: String,
-        block: (Node.() -> Unit)? = null,
-    ) = Node(builderContext, this).also {
+        block: (Node<RuntimeContext>.() -> Unit)? = null,
+    ) = Node<RuntimeContext>(builderContext, this).also {
         it.chainTo = "@special.non-chainable"
         it.actor = builderContext.playerActor
         it.text = text
@@ -24,9 +24,9 @@ abstract class NodeBase {
     }
 
     fun choice(
-        textBuilder: BuilderContext.() -> String,
-        block: (Node.() -> Unit)? = null,
-    ) = Node(builderContext, this).also {
+        textBuilder: RuntimeContext.() -> String,
+        block: (Node<RuntimeContext>.() -> Unit)? = null,
+    ) = Node<RuntimeContext>(builderContext, this).also {
         it.chainTo = "@special.non-chainable"
         it.actor = builderContext.playerActor
         it.textBuilder = textBuilder
@@ -36,9 +36,9 @@ abstract class NodeBase {
 
     fun narration(
         text: String,
-        block: (Node.() -> Unit)? = null,
-    ): Node {
-        val node = Node(builderContext, this)
+        block: (Node<RuntimeContext>.() -> Unit)? = null,
+    ): Node<RuntimeContext> {
+        val node = Node<RuntimeContext>(builderContext, this)
         builderContext.lastSibling(node)?.let {
             if (it.actor == builderContext.narratorActor && it.textBuilder == null) {
                 it.text += "\n\n" + text
@@ -54,23 +54,23 @@ abstract class NodeBase {
     }
 
     fun narration(
-        textBuilder: BuilderContext.() -> String,
-        block: (Node.() -> Unit)?,
-    ): Node =
-        Node(builderContext, this).also {
+        textBuilder: RuntimeContext.() -> String,
+        block: (Node<RuntimeContext>.() -> Unit)?,
+    ): Node<RuntimeContext> =
+        Node<RuntimeContext>(builderContext, this).also {
             it.actor = builderContext.narratorActor
             it.textBuilder = textBuilder
             block?.invoke(it)
             builderContext.registerNode(it)
         }
 
-    fun narration(textBuilder: BuilderContext.() -> String): Node = narration(textBuilder, null)
+    fun narration(textBuilder: RuntimeContext.() -> String): Node<RuntimeContext> = narration(textBuilder, null)
 
     fun line(
         text: String,
-        block: (Node.() -> Unit)? = null,
-    ): Node {
-        val node = Node(builderContext, this)
+        block: (Node<RuntimeContext>.() -> Unit)? = null,
+    ): Node<RuntimeContext> {
+        val node = Node<RuntimeContext>(builderContext, this)
         builderContext.lastSibling(node)?.let {
             if (it.actor == builderContext.npcActor && it.textBuilder == null) {
                 it.text += "\n\n" + text
@@ -86,19 +86,15 @@ abstract class NodeBase {
     }
 
     fun line(
-        textBuilder: BuilderContext.() -> String,
-        block: (Node.() -> Unit)?,
-    ): Node =
-        Node(builderContext, this).also {
+        textBuilder: RuntimeContext.() -> String,
+        block: (Node<RuntimeContext>.() -> Unit)?,
+    ): Node<RuntimeContext> =
+        Node<RuntimeContext>(builderContext, this).also {
             it.actor = builderContext.npcActor
             it.textBuilder = textBuilder
             block?.invoke(it)
             builderContext.registerNode(it)
         }
 
-    fun line(textBuilder: BuilderContext.() -> String): Node = line(textBuilder, null)
-
-    fun effect(block: BuilderContext.() -> Unit) {
-        block(builderContext)
-    }
+    fun line(textBuilder: RuntimeContext.() -> String): Node<RuntimeContext> = line(textBuilder, null)
 }
