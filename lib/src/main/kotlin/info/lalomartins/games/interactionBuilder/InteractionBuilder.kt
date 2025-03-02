@@ -5,14 +5,14 @@ import info.lalomartins.games.interactionBuilder.contexts.SimpleRuntimeContext
 
 class InteractionBuilder<
     ContextType,
-    // CategoryEnum, ActionBuilder
+    CategoryType,
 >(
-    rootContext: BuilderContext<ContextType> = BuilderContext.Simple(),
-    script: BuilderContext<ContextType>.() -> Unit,
+    rootContext: BuilderContext<ContextType, CategoryType> = BuilderContext.Simple(),
+    script: BuilderContext<ContextType, CategoryType>.() -> Unit,
 ) {
     init {
         with(rootContext) { script() }
     }
 }
 
-fun interactionBuilder(script: BuilderContext<SimpleRuntimeContext>.() -> Unit) = InteractionBuilder(script = script)
+fun interactionBuilder(script: BuilderContext<SimpleRuntimeContext, String>.() -> Unit) = InteractionBuilder(script = script)
