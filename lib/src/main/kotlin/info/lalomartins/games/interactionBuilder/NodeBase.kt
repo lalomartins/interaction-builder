@@ -6,8 +6,17 @@ import info.lalomartins.games.interactionBuilder.contexts.Node
 abstract class NodeBase<RuntimeContext, CategoryType> {
     abstract val builderContext: BuilderContext<RuntimeContext, CategoryType>
 
+    enum class Type {
+        Node,
+        Choice,
+        Narration,
+        Action,
+        Line,
+        Say,
+    }
+
     fun node(block: Node<RuntimeContext, CategoryType>.() -> Unit) =
-        Node<RuntimeContext, CategoryType>(builderContext, this).also {
+        builderContext.nodeBuilder(builderContext, this, Type.Node).also {
             block(it)
             builderContext.registerNode(it)
         }
@@ -15,7 +24,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
     fun choice(
         text: String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)? = null,
-    ) = Node<RuntimeContext, CategoryType>(builderContext, this).also {
+    ) = builderContext.nodeBuilder(builderContext, this, Type.Choice).also {
         it.chainTo = "@special.non-chainable"
         it.actor = builderContext.playerActor
         it.text = text
@@ -26,7 +35,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
     fun choice(
         textBuilder: RuntimeContext.() -> String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)? = null,
-    ) = Node<RuntimeContext, CategoryType>(builderContext, this).also {
+    ) = builderContext.nodeBuilder(builderContext, this, Type.Choice).also {
         it.chainTo = "@special.non-chainable"
         it.actor = builderContext.playerActor
         it.textBuilder = textBuilder
@@ -38,7 +47,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         text: String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)? = null,
     ): Node<RuntimeContext, CategoryType> {
-        val node = Node<RuntimeContext, CategoryType>(builderContext, this)
+        val node = builderContext.nodeBuilder(builderContext, this, Type.Narration)
         builderContext.lastSibling(node)?.let {
             if (it.actor == builderContext.narratorActor && it.textBuilder == null) {
                 it.text += "\n\n" + text
@@ -57,7 +66,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         textBuilder: RuntimeContext.() -> String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)?,
     ): Node<RuntimeContext, CategoryType> =
-        Node<RuntimeContext, CategoryType>(builderContext, this).also {
+        builderContext.nodeBuilder(builderContext, this, Type.Narration).also {
             it.actor = builderContext.narratorActor
             it.textBuilder = textBuilder
             block?.invoke(it)
@@ -70,7 +79,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         text: String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)? = null,
     ): Node<RuntimeContext, CategoryType> {
-        val node = Node<RuntimeContext, CategoryType>(builderContext, this)
+        val node = builderContext.nodeBuilder(builderContext, this, Type.Line)
         builderContext.lastSibling(node)?.let {
             if (it.actor == builderContext.npcActor && it.textBuilder == null) {
                 it.text += "\n\n" + text
@@ -89,7 +98,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         textBuilder: RuntimeContext.() -> String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)?,
     ): Node<RuntimeContext, CategoryType> =
-        Node<RuntimeContext, CategoryType>(builderContext, this).also {
+        builderContext.nodeBuilder(builderContext, this, Type.Line).also {
             it.actor = builderContext.npcActor
             it.textBuilder = textBuilder
             block?.invoke(it)

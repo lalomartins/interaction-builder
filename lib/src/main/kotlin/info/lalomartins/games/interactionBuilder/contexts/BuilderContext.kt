@@ -11,6 +11,11 @@ abstract class BuilderContext<RuntimeContext, CategoryType> : NodeBase<RuntimeCo
     var npcActor = "npc"
     var narratorActor = "narrator"
     var setup: (RuntimeContext.() -> Unit)? = null
+    internal lateinit var nodeBuilder: (
+        BuilderContext<RuntimeContext, CategoryType>,
+        NodeBase<RuntimeContext, CategoryType>,
+        Type,
+    ) -> Node<RuntimeContext, CategoryType>
 
     fun introduction(text: String) {
         if (introduction.isNotEmpty()) {
