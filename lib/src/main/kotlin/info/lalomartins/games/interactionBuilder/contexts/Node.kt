@@ -41,4 +41,23 @@ open class Node<RuntimeContext, CategoryType>(
     fun effect(block: RuntimeContext.() -> Unit) {
         effects.add(block)
     }
+
+    override fun narration(text: String): Node<RuntimeContext, CategoryType> {
+        if (actor == builderContext.narratorActor && textBuilder == null) {
+            if (this.text.isNotEmpty()) {
+                this.text += "\n\n"
+            }
+            this.text += text
+            return this
+        }
+        return super.narration(text)
+    }
+
+    override fun narration(textBuilder: RuntimeContext.() -> String): Node<RuntimeContext, CategoryType> {
+        if (actor == builderContext.narratorActor && this.textBuilder == null && this.text.isEmpty()) {
+            this.textBuilder = textBuilder
+            return this
+        }
+        return super.narration(textBuilder)
+    }
 }

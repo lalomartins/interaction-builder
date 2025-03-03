@@ -13,12 +13,12 @@ val simpleBuilder =
 
         introduction(
             """
-               |Interaction Builder is a DSL for writing conversations in games!
-               |You can use it to write branching dialogue, and use that in a game engine!
-               |
-               |This demo goes through the basic features. We recommend “playing” it while looking
-               |at the source code (`Simple.kt`).
-            """.trimMargin(),
+            Interaction Builder is a DSL for writing conversations in games!
+            You can use it to write branching dialogue, and use that in a game engine!
+            
+            This demo goes through the basic features. We recommend “playing” it while looking
+            at the source code (`Simple.kt`).
+            """.trimIndent(),
         )
 
         node {
@@ -31,10 +31,10 @@ val simpleBuilder =
             choice("Can I put text inside options?") {
                 narration(
                     """
-                    |You sure can!
-                    |For example, here's some lines inside an option.
-                    |You can even put options inside OTHER options!
-                    """.trimMargin(),
+                    You sure can!
+                    For example, here's some lines inside an option.
+                    You can even put options inside OTHER options!
+                    """.trimIndent(),
                 ) {
                     choice("Like this!") {
                         narration("Wow!")
@@ -49,8 +49,8 @@ val simpleBuilder =
         node {
             narration(
                 """
-                |You can also write 'effects', which represent things that happen in the game!
-                |You can use 'effects' to write things like 'player takes damage'.
+                You can also write 'effects', which represent things that happen in the game!
+                You can use 'effects' to write things like 'player takes damage'.
                 """.trimIndent(),
             )
 
@@ -65,10 +65,10 @@ val simpleBuilder =
             choice("But it didn't actually fade!") {
                 narration(
                     """
-                    |That's because this demo doesn't know about 'fading', or any other feature. 
-                    |For the demo, we just defined that function with a `println()`.
-                    |
-                    |In a real game, you can define custom effects that do useful work!
+                    That's because this demo doesn't know about 'fading', or any other feature. 
+                    For the demo, we just defined that function with a `println()`.
+                    
+                    In a real game, you can define custom effects that do useful work!
                     """.trimIndent(),
                 )
             }
@@ -77,10 +77,10 @@ val simpleBuilder =
         node {
             narration(
                 """
-                |The default context class has MutableMaps called `strings`, `vals`, and `flags`
-                |set up for you.
-                |You can use them to store state between nodes.
-                |Let's set a string variable called "name".
+                The default context class has MutableMaps called `strings`, `vals`, and `flags`
+                set up for you.
+                You can use them to store state between nodes.
+                Let's set a string variable called "name".
                 """.trimIndent(),
             )
 
@@ -90,10 +90,10 @@ val simpleBuilder =
 
             narration {
                 """
-                |You can use these variables in text, but for that you must pass them as a block
-                |rather than a fixed string.
-                |For example, here's a string that uses the name variable:
-                |My name is ${strings["name"]}
+                You can use these variables in text, but for that you must pass them as a block
+                rather than a fixed string.
+                For example, here's a string that uses the name variable:
+                My name is ${strings["name"]}
                 """.trimIndent()
             }
 
@@ -117,8 +117,8 @@ val simpleBuilder =
         node {
             narration(
                 """
-                |We can also have conditional choices and even nodes.
-                |Let's set a val called "gold" to 5.
+                We can also have conditional choices and even nodes.
+                Let's set a val called "gold" to 5.
                 """.trimIndent(),
             )
 
@@ -132,14 +132,14 @@ val simpleBuilder =
 
             narration("Next, let's enable different choices depending on what's stored inside `vals[\"gold\"]`:")
 
-            choice({ "I have ${vals["gold"]} gold!" }) {
-                needs { vals["gold"]!! >= 5 }
+            choice({ "Wow, I have ${vals["gold"]} gold!" }) {
+                needs { vals["gold"]!! > 5F }
                 line("You can buy an item!")
                 line("You can buy a weapon!")
             }
 
-            choice({ "I have ${vals["gold"]} gold!" }) {
-                needs { vals["gold"]!! < 5 }
+            choice({ "I have only ${vals["gold"]} gold!" }) {
+                needs { vals["gold"]!! <= 5F }
                 line("You can't buy an item!")
             }
         }

@@ -43,18 +43,40 @@ class Runner<RuntimeContext>(
 
         val choices = node.children.filter { it.playerChoice }
         if (choices.isNotEmpty()) {
+            val enabledMap = mutableMapOf<Int, Boolean>()
             for ((index, choice) in choices.withIndex()) {
-                choice.textBuilder?.invoke(runtimeContext)?.let {
-                    choice.text = it
-                }
-                if (choice.text.isNotEmpty()) {
-                    println("$index: (${choice.actor}) ${choice.text}")
+                (choice.condition?.invoke(runtimeContext) != false).let { enabled ->
+                    choice.textBuilder?.invoke(runtimeContext)?.let {
+                        choice.text = it
+                    }
+                    enabledMap[index] = enabled
+                    if (choice.text.isNotEmpty()) {
+                        if (enabled) {
+                            println("${index + 1}: (${choice.actor}) ${choice.text}")
+                        } else {
+                            println("—: (${choice.actor}) ${choice.text}")
+                        }
+                    }
                 }
             }
-            return null
+            while (true) {
+                val choice = readln().toInt() - 1
+                if (choice < 0) {
+                    return null
+                }
+                if (enabledMap[choice] == true) {
+                    return choices[choice]
+                } else {
+                    println("Invalid choice")
+                }
+            }
         }
 
-        return node.chain
+        node.children.firstOrNull { !it.playerChoice }?.let {
+            return it
+        }
+
+        return node.chain ?: getNextNode(node)
     }
 
     private fun getNextNode(node: Node<RuntimeContext, String>): Node<RuntimeContext, String>? {

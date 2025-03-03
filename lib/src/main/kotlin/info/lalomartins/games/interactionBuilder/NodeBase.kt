@@ -54,12 +54,15 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
 
     fun narration(
         text: String,
-        block: (Node<RuntimeContext, CategoryType>.() -> Unit)? = null,
+        block: (Node<RuntimeContext, CategoryType>.() -> Unit)?,
     ): Node<RuntimeContext, CategoryType> {
         val node = builderContext.nodeBuilder(builderContext, this, Type.Narration)
         builderContext.lastSibling(node)?.let {
             if (it.actor == builderContext.narratorActor && it.textBuilder == null) {
-                it.text += "\n\n" + text
+                if (it.text.isNotEmpty()) {
+                    it.text += "\n\n"
+                }
+                it.text += text
                 block?.invoke(it)
                 return it
             }
@@ -71,6 +74,8 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         builderContext.registerNode(node)
         return node
     }
+
+    open fun narration(text: String): Node<RuntimeContext, CategoryType> = narration(text, null)
 
     fun narration(
         textBuilder: RuntimeContext.() -> String,
@@ -84,7 +89,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
             builderContext.registerNode(this)
         }
 
-    fun narration(textBuilder: RuntimeContext.() -> String): Node<RuntimeContext, CategoryType> = narration(textBuilder, null)
+    open fun narration(textBuilder: RuntimeContext.() -> String): Node<RuntimeContext, CategoryType> = narration(textBuilder, null)
 
     fun line(
         text: String,
