@@ -22,6 +22,7 @@ class InteractionBuilder<
             this.nodeBuilder = nodeBuilder
             script()
         }
+        rootContext.cleanup()
     }
 }
 

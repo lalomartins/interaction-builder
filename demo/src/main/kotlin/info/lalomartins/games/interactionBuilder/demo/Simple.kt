@@ -9,12 +9,15 @@ fun SimpleRuntimeContext.fadeUp(duration: Float) {
 
 val simpleBuilder =
     interactionBuilder {
-        name = "name"
+        name = "simple"
 
         introduction(
             """
                |Interaction Builder is a DSL for writing conversations in games!
                |You can use it to write branching dialogue, and use that in a game engine!
+               |
+               |This demo goes through the basic features. We recommend “playing” it while looking
+               |at the source code (`Simple.kt`).
             """.trimMargin(),
         )
 
@@ -62,8 +65,9 @@ val simpleBuilder =
             choice("But it didn't actually fade!") {
                 narration(
                     """
-                    |That's because this page doesn't know about 'fading', or any other feature. 
-                    |When you're testing your script on this page, we'll just show you your effects as text.
+                    |That's because this demo doesn't know about 'fading', or any other feature. 
+                    |For the demo, we just defined that function with a `println()`.
+                    |
                     |In a real game, you can define custom effects that do useful work!
                     """.trimIndent(),
                 )
@@ -73,7 +77,8 @@ val simpleBuilder =
         node {
             narration(
                 """
-                |The default context class has MutableMaps called `strings`, `vals`, and `flags` set up for you.
+                |The default context class has MutableMaps called `strings`, `vals`, and `flags`
+                |set up for you.
                 |You can use them to store state between nodes.
                 |Let's set a string variable called "name".
                 """.trimIndent(),

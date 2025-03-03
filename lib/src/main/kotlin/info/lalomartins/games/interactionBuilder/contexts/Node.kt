@@ -9,12 +9,26 @@ open class Node<RuntimeContext, CategoryType>(
     var anchor: String? = null
     var chain: Node<RuntimeContext, CategoryType>? = null
     var chainTo: String? = null
+    val children = mutableListOf<Node<RuntimeContext, CategoryType>>()
     var actor: String = builderContext.narratorActor
+    var playerChoice = false
     var category: CategoryType? = null
     var text = ""
     var textBuilder: (RuntimeContext.() -> String)? = null
     var condition: (RuntimeContext.() -> Boolean)? = null
     val effects = mutableListOf<RuntimeContext.() -> Unit>()
+
+    override fun addChild(node: Node<RuntimeContext, CategoryType>) {
+        children.add(node)
+    }
+
+    override fun nextSibling(node: Node<RuntimeContext, CategoryType>): Node<RuntimeContext, CategoryType>? {
+        val i = children.indexOf(node)
+        if (i != 1 && i < children.size - 1) {
+            return children[i + 1]
+        }
+        return null
+    }
 
     fun jump(to: String) {
         chainTo = to

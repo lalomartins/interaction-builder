@@ -15,32 +15,41 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         Say,
     }
 
+    abstract fun addChild(node: Node<RuntimeContext, CategoryType>)
+
+    abstract fun nextSibling(node: Node<RuntimeContext, CategoryType>): Node<RuntimeContext, CategoryType>?
+
     fun node(block: Node<RuntimeContext, CategoryType>.() -> Unit) =
         builderContext.nodeBuilder(builderContext, this, Type.Node).also {
             block(it)
+            addChild(it)
             builderContext.registerNode(it)
         }
 
     fun choice(
         text: String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)? = null,
-    ) = builderContext.nodeBuilder(builderContext, this, Type.Choice).also {
-        it.chainTo = "@special.non-chainable"
-        it.actor = builderContext.playerActor
-        it.text = text
-        block?.invoke(it)
-        builderContext.registerNode(it)
+    ) = builderContext.nodeBuilder(builderContext, this, Type.Choice).apply {
+        chainTo = MARKER_NON_CHAINABLE
+        playerChoice = true
+        actor = builderContext.playerActor
+        this.text = text
+        block?.invoke(this)
+        this@NodeBase.addChild(this)
+        builderContext.registerNode(this)
     }
 
     fun choice(
         textBuilder: RuntimeContext.() -> String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)? = null,
-    ) = builderContext.nodeBuilder(builderContext, this, Type.Choice).also {
-        it.chainTo = "@special.non-chainable"
-        it.actor = builderContext.playerActor
-        it.textBuilder = textBuilder
-        block?.invoke(it)
-        builderContext.registerNode(it)
+    ) = builderContext.nodeBuilder(builderContext, this, Type.Choice).apply {
+        chainTo = MARKER_NON_CHAINABLE
+        playerChoice = true
+        actor = builderContext.playerActor
+        this.textBuilder = textBuilder
+        block?.invoke(this)
+        this@NodeBase.addChild(this)
+        builderContext.registerNode(this)
     }
 
     fun narration(
@@ -58,6 +67,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         node.actor = builderContext.narratorActor
         node.text = text
         block?.invoke(node)
+        addChild(node)
         builderContext.registerNode(node)
         return node
     }
@@ -66,11 +76,12 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         textBuilder: RuntimeContext.() -> String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)?,
     ): Node<RuntimeContext, CategoryType> =
-        builderContext.nodeBuilder(builderContext, this, Type.Narration).also {
-            it.actor = builderContext.narratorActor
-            it.textBuilder = textBuilder
-            block?.invoke(it)
-            builderContext.registerNode(it)
+        builderContext.nodeBuilder(builderContext, this, Type.Narration).apply {
+            actor = builderContext.narratorActor
+            this.textBuilder = textBuilder
+            block?.invoke(this)
+            this@NodeBase.addChild(this)
+            builderContext.registerNode(this)
         }
 
     fun narration(textBuilder: RuntimeContext.() -> String): Node<RuntimeContext, CategoryType> = narration(textBuilder, null)
@@ -90,6 +101,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         node.actor = builderContext.npcActor
         node.text = text
         block?.invoke(node)
+        addChild(node)
         builderContext.registerNode(node)
         return node
     }
@@ -98,12 +110,17 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         textBuilder: RuntimeContext.() -> String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)?,
     ): Node<RuntimeContext, CategoryType> =
-        builderContext.nodeBuilder(builderContext, this, Type.Line).also {
-            it.actor = builderContext.npcActor
-            it.textBuilder = textBuilder
-            block?.invoke(it)
-            builderContext.registerNode(it)
+        builderContext.nodeBuilder(builderContext, this, Type.Line).apply {
+            actor = builderContext.npcActor
+            this.textBuilder = textBuilder
+            block?.invoke(this)
+            this@NodeBase.addChild(this)
+            builderContext.registerNode(this)
         }
 
     fun line(textBuilder: RuntimeContext.() -> String): Node<RuntimeContext, CategoryType> = line(textBuilder, null)
+
+    companion object {
+        const val MARKER_NON_CHAINABLE = "@special.non-chainable"
+    }
 }

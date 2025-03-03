@@ -28,15 +28,32 @@ abstract class BuilderContext<RuntimeContext, CategoryType> : NodeBase<RuntimeCo
         setup = block
     }
 
+    override fun addChild(node: Node<RuntimeContext, CategoryType>) {}
+
     abstract fun registerNode(node: Node<RuntimeContext, CategoryType>)
 
     abstract fun lastNode(): Node<RuntimeContext, CategoryType>?
+
+    abstract fun cleanup()
 
     abstract fun lastSibling(of: Node<RuntimeContext, CategoryType>): Node<RuntimeContext, CategoryType>?
 
     open class Simple<R, C> : BuilderContext<R, C>() {
         val nodes = mutableListOf<Node<R, C>>()
+        val rootNodes = mutableListOf<Node<R, C>>()
         val nodeIndex = mutableMapOf<String, Node<R, C>>()
+
+        override fun addChild(node: Node<R, C>) {
+            rootNodes.add(node)
+        }
+
+        override fun nextSibling(node: Node<R, C>): Node<R, C>? {
+            val i = rootNodes.indexOf(node)
+            if (i != 1 && i < rootNodes.size - 1) {
+                return rootNodes[i + 1]
+            }
+            return null
+        }
 
         override fun registerNode(node: Node<R, C>) {
             lastSibling(node)?.let { other ->
@@ -49,6 +66,32 @@ abstract class BuilderContext<RuntimeContext, CategoryType> : NodeBase<RuntimeCo
         }
 
         override fun lastNode() = nodes.lastOrNull()
+
+        override fun cleanup() {
+            for (node in nodes) {
+                if (node.chain == null && node.chainTo != null) {
+                    node.chain = nodeIndex[node.chainTo]
+                }
+                if (node.chain != null && node.children.isNotEmpty()) {
+                    if (node.children.first().chainTo == MARKER_NON_CHAINABLE) {
+                        for (child in node.children) {
+                            if (child.chain == null && (child.chainTo == null || child.chainTo == MARKER_NON_CHAINABLE)) {
+                                child.chain = node.chain
+                                child.chainTo = node.chainTo
+                            }
+                        }
+                    } else {
+                        val tail = node.children.last()
+                        if (tail.chain == null && tail.chainTo == null) {
+                            tail.chain = node.chain
+                            tail.chainTo = node.chainTo
+                        }
+                    }
+                    node.chain = null
+                    node.chainTo = null
+                }
+            }
+        }
 
         override fun lastSibling(of: Node<R, C>): Node<R, C>? {
             for (node in nodes.asReversed()) {
