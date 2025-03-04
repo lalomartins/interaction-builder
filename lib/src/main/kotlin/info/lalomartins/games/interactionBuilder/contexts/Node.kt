@@ -17,6 +17,7 @@ open class Node<RuntimeContext, CategoryType>(
     var text = ""
     var textBuilder: (RuntimeContext.() -> String)? = null
     var condition: (RuntimeContext.() -> Boolean)? = null
+    var conditionLabel: String? = null
     val effects = mutableListOf<RuntimeContext.() -> Unit>()
 
     override fun addChild(node: Node<RuntimeContext, CategoryType>) {
@@ -35,7 +36,11 @@ open class Node<RuntimeContext, CategoryType>(
         chainTo = to
     }
 
-    fun needs(block: RuntimeContext.() -> Boolean) {
+    fun needs(
+        label: String? = null,
+        block: RuntimeContext.() -> Boolean,
+    ) {
+        conditionLabel = label
         condition = block
     }
 
