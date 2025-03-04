@@ -19,6 +19,7 @@ open class Node<RuntimeContext, CategoryType>(
     var condition: (RuntimeContext.() -> Boolean)? = null
     var conditionLabel: String? = null
     val effects = mutableListOf<RuntimeContext.() -> Unit>()
+    val turnTo = mutableListOf<String>()
 
     override fun addChild(node: Node<RuntimeContext, CategoryType>) {
         children.add(node)
@@ -34,6 +35,10 @@ open class Node<RuntimeContext, CategoryType>(
 
     fun jump(to: String) {
         chainTo = to
+    }
+
+    fun turn(to: String) {
+        turnTo.add(to)
     }
 
     fun needs(

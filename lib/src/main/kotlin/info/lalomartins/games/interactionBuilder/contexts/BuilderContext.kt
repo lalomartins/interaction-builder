@@ -57,7 +57,7 @@ abstract class BuilderContext<RuntimeContext, CategoryType> : NodeBase<RuntimeCo
 
         override fun registerNode(node: Node<R, C>) {
             lastSibling(node)?.let { other ->
-                if (other.chain == null && other.chainTo == null) {
+                if (other.chain == null && other.chainTo == null && other.turnTo.isEmpty()) {
                     other.chain = node
                 }
             }
@@ -75,14 +75,17 @@ abstract class BuilderContext<RuntimeContext, CategoryType> : NodeBase<RuntimeCo
                 if (node.chain != null && node.children.isNotEmpty()) {
                     if (node.children.first().chainTo == MARKER_NON_CHAINABLE) {
                         for (child in node.children) {
-                            if (child.chain == null && (child.chainTo == null || child.chainTo == MARKER_NON_CHAINABLE)) {
+                            if (child.chain == null &&
+                                (child.chainTo == null || child.chainTo == MARKER_NON_CHAINABLE) &&
+                                child.turnTo.isEmpty()
+                            ) {
                                 child.chain = node.chain
                                 child.chainTo = node.chainTo
                             }
                         }
                     } else {
                         val tail = node.children.last()
-                        if (tail.chain == null && tail.chainTo == null) {
+                        if (tail.chain == null && tail.chainTo == null && tail.turnTo.isEmpty()) {
                             tail.chain = node.chain
                             tail.chainTo = node.chainTo
                         }
