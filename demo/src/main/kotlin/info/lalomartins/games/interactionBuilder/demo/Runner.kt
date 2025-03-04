@@ -31,7 +31,7 @@ class Runner<RuntimeContext>(
             effect.invoke(runtimeContext)
         }
 
-        if (node.actor != rootContext.narratorActor) {
+        if (node.actor.isNotEmpty()) {
             println("${node.actor}:")
         }
         node.textBuilder?.invoke(runtimeContext)?.let {

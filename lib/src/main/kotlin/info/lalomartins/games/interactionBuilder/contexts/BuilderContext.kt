@@ -9,7 +9,7 @@ abstract class BuilderContext<RuntimeContext, CategoryType> : NodeBase<RuntimeCo
     var introduction = ""
     var playerActor = "player"
     var npcActor = "npc"
-    var narratorActor = "narrator"
+    var narratorActor = ""
     var setup: (RuntimeContext.() -> Unit)? = null
     internal lateinit var nodeBuilder: (
         BuilderContext<RuntimeContext, CategoryType>,
