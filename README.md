@@ -1,23 +1,76 @@
-# interaction-builder
+# Interaction Builder
 
-This project uses [Gradle](https://gradle.org/).
-To build and run the application, use the *Gradle* tool window by clicking the Gradle icon in the right-hand toolbar,
-or run it directly from the terminal:
+Interaction Builder is a DSL for writing conversations in games. You can use it to write branching dialogue, and use that in a game engine.
 
-* Run `./gradlew run` to build and run the application.
-* Run `./gradlew build` to only build the application.
-* Run `./gradlew check` to run all checks, including tests.
-* Run `./gradlew clean` to clean all build outputs.
+Okay, here's a simple example.
 
-Note the usage of the Gradle Wrapper (`./gradlew`).
-This is the suggested way to use Gradle in production projects.
+```kotlin
+val simpleBuilder =
+    interactionBuilder {
+        name = "simple"
 
-[Learn more about the Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html).
+        introduction(
+            """
+            Interaction Builder is a DSL for writing conversations in games.
+            You can use it to write branching dialogue, and use that in a game engine.
+            
+            This demo goes through the basic features. We recommend “playing” it while looking
+            at the source code (`Simple.kt`).
+            """.trimIndent(),
+        )
 
-[Learn more about Gradle tasks](https://docs.gradle.org/current/userguide/command_line_interface.html#common_tasks).
+        node {
+            // The first node defined is the root node by default.
+            choice("Wow, some options!") {
+                narration("You got it, pal!")
+                // a terminal like this is interpreted as "goto next sibling/uncle node"
+            }
 
-This project follows the suggested multi-module setup and consists of the `app` and `utils` subprojects.
-The shared build logic was extracted to a convention plugin located in `buildSrc`.
+            choice("Can I put text inside options?") {
+                narration(
+                    """
+                    You sure can!
+                    For example, here's some lines inside an option.
+                    You can even put options inside OTHER options!
+                    """.trimIndent(),
+                ) {
+                    choice("Like this!") {
+                        narration("Wow!")
+                    }
+                    choice("Or this!") {
+                        narration("Incredible!")
+                    }
+                }
+            }
+        }
+        
+        narration("This would run after either branch above.") {
+            effect {
+                doSomethingAtRuntime()
+            }
+        }
+    }
+```
 
-This project uses a version catalog (see `gradle/libs.versions.toml`) to declare and version dependencies
-and both a build cache and a configuration cache (see `gradle.properties`).
+You can find more examples and details in the [demo](demo/src/main/kotlin/info/lalomartins/games/interactionBuilder/demo) project, along with a simple command line runner.
+
+It is designed to be used in one of two ways:
+
+## Simple games/projects
+
+Get a root context by running the builder (with the defaults or with a custom runtime context class), then iterate that directly in your game. An example of that is included in the [demo](demo/src/main/kotlin/info/lalomartins/games/interactionBuilder/demo/Runner.kt) project.
+
+## More complex games with custom needs
+
+Get a root context by running the builder (with the defaults or with a custom node builder), then iterate all the nodes within to construct your own data structure as required by your game and/or engine.
+
+```kotlin
+class MyInteraction {
+    fun fromBuilder(builder: InteractionBuilder) {
+        val context = builder.context as BuilderContext.Simple
+        for (node in builder.nodes) {
+            convertNode(node)
+        }
+    }
+}
+```

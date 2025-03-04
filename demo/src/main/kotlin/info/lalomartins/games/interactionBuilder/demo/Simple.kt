@@ -13,8 +13,8 @@ val simpleBuilder =
 
         introduction(
             """
-            Interaction Builder is a DSL for writing conversations in games!
-            You can use it to write branching dialogue, and use that in a game engine!
+            Interaction Builder is a DSL for writing conversations in games.
+            You can use it to write branching dialogue, and use that in a game engine.
             
             This demo goes through the basic features. We recommend “playing” it while looking
             at the source code (`Simple.kt`).
