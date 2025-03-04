@@ -14,7 +14,7 @@ class InteractionBuilder<
         NodeBase<ContextType, CategoryType>,
         NodeBase.Type,
     ) -> Node<ContextType, CategoryType> =
-        { builderContext, parent, type -> Node(builderContext, parent) },
+        { builderContext, parent, type -> Node(builderContext, parent, type) },
     script: BuilderContext<ContextType, CategoryType>.() -> Unit,
 ) {
     init {

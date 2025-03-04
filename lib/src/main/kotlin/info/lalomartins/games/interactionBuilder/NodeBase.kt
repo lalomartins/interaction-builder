@@ -8,11 +8,9 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
 
     enum class Type {
         Node,
-        Choice,
-        Narration,
         Action,
-        Line,
-        Say,
+        Dialog,
+        Narration,
     }
 
     abstract fun addChild(node: Node<RuntimeContext, CategoryType>)
@@ -29,7 +27,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
     fun choice(
         text: String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)? = null,
-    ) = builderContext.nodeBuilder(builderContext, this, Type.Choice).apply {
+    ) = builderContext.nodeBuilder(builderContext, this, Type.Action).apply {
         chainTo = MARKER_NON_CHAINABLE
         playerChoice = true
         actor = builderContext.playerActor
@@ -42,7 +40,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
     fun choice(
         textBuilder: RuntimeContext.() -> String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)? = null,
-    ) = builderContext.nodeBuilder(builderContext, this, Type.Choice).apply {
+    ) = builderContext.nodeBuilder(builderContext, this, Type.Action).apply {
         chainTo = MARKER_NON_CHAINABLE
         playerChoice = true
         actor = builderContext.playerActor
@@ -95,7 +93,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         text: String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)? = null,
     ): Node<RuntimeContext, CategoryType> {
-        val node = builderContext.nodeBuilder(builderContext, this, Type.Line)
+        val node = builderContext.nodeBuilder(builderContext, this, Type.Dialog)
         builderContext.lastSibling(node)?.let {
             if (it.actor == builderContext.npcActor && it.textBuilder == null) {
                 it.text += "\n\n" + text
@@ -115,7 +113,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
         textBuilder: RuntimeContext.() -> String,
         block: (Node<RuntimeContext, CategoryType>.() -> Unit)?,
     ): Node<RuntimeContext, CategoryType> =
-        builderContext.nodeBuilder(builderContext, this, Type.Line).apply {
+        builderContext.nodeBuilder(builderContext, this, Type.Dialog).apply {
             actor = builderContext.npcActor
             this.textBuilder = textBuilder
             block?.invoke(this)

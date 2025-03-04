@@ -4,7 +4,8 @@ import info.lalomartins.games.interactionBuilder.NodeBase
 
 open class Node<RuntimeContext, CategoryType>(
     override val builderContext: BuilderContext<RuntimeContext, CategoryType>,
-    val parent: NodeBase<RuntimeContext, CategoryType>? = null,
+    val parent: NodeBase<RuntimeContext, CategoryType>?,
+    val type: Type,
 ) : NodeBase<RuntimeContext, CategoryType>() {
     var anchor: String? = null
     var chain: Node<RuntimeContext, CategoryType>? = null
