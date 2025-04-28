@@ -2,6 +2,10 @@
 
 Interaction Builder is a DSL for writing conversations in games. You can use it to write branching dialogue, and use that in a game engine.
 
+It is inspired by [Yarn Spinner](https://www.yarnspinner.dev/), which is highly recommended if you're developing in anything but Kotlin (or possibly JVM). However, when I started writing a Yarn Spinner runtime for Kotlin, I realized one thing Kotlin is known for is being “the queen of DSLs”, so it would probably be easier and more intuitive to write a DSL instead.
+
+No code is taken from or based on Yarn Spinner in any way, but some of the examples are adapted from theirs.
+
 Okay, here's a simple example.
 
 ```kotlin
