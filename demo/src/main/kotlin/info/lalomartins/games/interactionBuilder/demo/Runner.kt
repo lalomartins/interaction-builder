@@ -81,7 +81,9 @@ class Runner<RuntimeContext>(
 
     private fun getNextNode(node: Node<RuntimeContext, String>): Node<RuntimeContext, String>? {
         node.parent?.nextSibling(node)?.let {
-            return it
+            if (!it.playerChoice) {
+                return it
+            }
         }
         (node.parent as? Node<RuntimeContext, String>)?.let { parent ->
             parent.chain?.let {
