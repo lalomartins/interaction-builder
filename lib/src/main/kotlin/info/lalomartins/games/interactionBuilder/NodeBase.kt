@@ -56,7 +56,7 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
     ): Node<RuntimeContext, CategoryType> {
         val node = builderContext.nodeBuilder(builderContext, this, Type.Narration)
         builderContext.lastSibling(node)?.let {
-            if (it.actor == builderContext.narratorActor && it.textBuilder == null) {
+            if (it.actor == builderContext.narratorActor && it.textBuilder == null && it.children.isEmpty()) {
                 if (it.text.isNotEmpty()) {
                     it.text += "\n\n"
                 }
@@ -95,7 +95,10 @@ abstract class NodeBase<RuntimeContext, CategoryType> {
     ): Node<RuntimeContext, CategoryType> {
         val node = builderContext.nodeBuilder(builderContext, this, Type.Dialog)
         builderContext.lastSibling(node)?.let {
-            if (it.actor == builderContext.npcActor && it.textBuilder == null) {
+            if (it.actor == builderContext.npcActor && it.textBuilder == null && it.children.isEmpty()) {
+                if (it.text.isNotEmpty()) {
+                    it.text += "\n\n"
+                }
                 it.text += "\n\n" + text
                 block?.invoke(it)
                 return it
