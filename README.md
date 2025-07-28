@@ -78,3 +78,25 @@ class MyInteraction {
     }
 }
 ```
+
+## Installation
+
+This library may or may not go on Maven Central once it's stable. For now, you can get it from [JitPack](https://jitpack.io/#lalomartins/interaction-builder).
+
+```kotlin
+	dependencyResolutionManagement {
+		repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+		repositories {
+			mavenCentral()
+			maven { url = uri("https://jitpack.io") }
+		}
+	}
+```
+
+```kotlin
+    dependencies {
+        implementation("com.github.lalomartins:interaction-builder:lib:0.1.0")
+    }
+```
+
+Note the actual imports are `info.lalomartins.interactionBuilder.*`, not `com.github.lalomartins.interaction-builder.*`.
