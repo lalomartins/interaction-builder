@@ -95,8 +95,6 @@ This library may or may not go on Maven Central once it's stable. For now, you c
 
 ```kotlin
     dependencies {
-        implementation("com.github.lalomartins:interaction-builder:lib:0.1.0")
+        implementation("info.lalomartins.interaction-builder:lib:v0.1.1")
     }
 ```
-
-Note the actual imports are `info.lalomartins.interactionBuilder.*`, not `com.github.lalomartins.interaction-builder.*`.
