@@ -5,11 +5,11 @@ import info.lalomartins.games.interactionBuilder.NodeBase
 abstract class BuilderContext<RuntimeContext, CategoryType> : NodeBase<RuntimeContext, CategoryType>() {
     override val builderContext: BuilderContext<RuntimeContext, CategoryType>
         get() = this
-    var name = ""
-    var introduction = ""
-    var playerActor = "player"
-    var npcActor = "npc"
-    var narratorActor = ""
+    open var name = ""
+    open var introduction = ""
+    open var playerActor = "player"
+    open var npcActor = "npc"
+    open var narratorActor = ""
     var setup: (RuntimeContext.() -> Unit)? = null
     internal lateinit var nodeBuilder: (
         BuilderContext<RuntimeContext, CategoryType>,
